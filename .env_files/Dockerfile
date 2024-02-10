@@ -3,3 +3,4 @@ RUN mkdir /work
 WORKDIR /work
 RUN apt update -y
 RUN apt install fish vim wget curl -y
+RUN pip install tqdm
