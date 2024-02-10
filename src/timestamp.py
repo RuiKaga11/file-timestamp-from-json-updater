@@ -2,6 +2,8 @@ import os
 from datetime import datetime
 import json
 import math
+import glob
+import tqdm
 
 def set_timestamp(file:str , ctime:float, atime:float):
     # アクセス日時 と 更新日時 を変更
@@ -41,6 +43,11 @@ def chage_timestamp(metadata_json):
     target_file = os.path.join(dirname, d["title"])
     set_timestamp(target_file, ctime, mtime)
 
+def change_timestamp_in_target_dir(target_dir):
+    json_files = glob.glob(os.path.join(target_dir, "**", "*.json"))
+    for json_file in tqdm.tqdm(json_files):
+        chage_timestamp(json_file)
+
 
 if __name__=="__main__":
     import sys
@@ -52,3 +59,4 @@ if __name__=="__main__":
     print("after")
     chage_timestamp(file+".json")
     print(get_timestamp(file))
+    
