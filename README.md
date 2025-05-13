@@ -1,6 +1,11 @@
 # timestamp
-googlephotoからアーカイブ形式でダウンロードした写真のタイムスタンプを変更するプログラム。
-手元のNASにgoogleフォトから移動するときにタイムスタンプがずれてしまったので作成しました。
+## 元ソース（@sontyu09さん）
+googleフォトからアーカイブ形式でダウンロードした写真のタイムスタンプを変更するプログラム。
+手元のPCにgoogleフォトから移動するときにタイムスタンプがずれてしまったので作成しました。
+調べたところ、クラウドからローカルにダウンロードした際のタイムスタンプ問題は解決できないようだった。
+解決サービスもないので、同じように考えた方の既存のソースをもとに、Geminiに丸投げして、jpeg,mp4など対象範囲の拡大、フォルダごと行えるようにカスタマイズした。
+元記事（https://qiita.com/sontyu09/items/cbccea6e645328d9c461）
+元ソース（https://gitlab.com/sontyu/timestamp）
 アーカイブ形式での一括ダウンロード方法は[こちら](https://support.google.com/accounts/answer/3024190?sjid=16825085842255200521-AP)を参考にしてください。
 
 ## 環境構築
@@ -30,24 +35,20 @@ $ tree
 ```
 JPGのメタ情報を見てみると、ダウンロードした日が作成日になっている。
 
-![before](doc/fig/before.png)
-
-この写真は明らかに5年以上前に取った写真なのだが、作成日が今日になっている。
-
 そこで、同じファイル名のjsonファイルの中身を見ると。
 
 ```.json
 {
-  "title": "IMG_6248.JPG",
+  "title": "jsonと同名のフォト名.mp4",
   "description": "",
   "imageViews": "0",
   "creationTime": {
-    "timestamp": "1561986860",
-    "formatted": "2019/07/01 13:14:20 UTC"
+    "timestamp": "1744731312",
+    "formatted": "2025/04/15 15:35:12 UTC"
   },
   "photoTakenTime": {
-    "timestamp": "1561986555",
-    "formatted": "2019/07/01 13:09:15 UTC"
+    "timestamp": "1713678482",
+    "formatted": "2024/04/21 5:48:02 UTC"
   },
   "geoData": {
     "latitude": 0.0,
@@ -56,14 +57,7 @@ JPGのメタ情報を見てみると、ダウンロードした日が作成日�
     "latitudeSpan": 0.0,
     "longitudeSpan": 0.0
   },
-  "geoDataExif": {
-    "latitude": 0.0,
-    "longitude": 0.0,
-    "altitude": 0.0,
-    "latitudeSpan": 0.0,
-    "longitudeSpan": 0.0
-  },
-  "url": "https://url_to_googlephoto.com",
+  "url": "https://photos.google/photo/｛メタ名｝",
   "googlePhotosOrigin": {
     "mobileUpload": {
       "deviceType": "IOS_PHONE"
@@ -80,19 +74,7 @@ jsonファイルの中にメタデータが書き込まれているよう。
 `src/`内にある[timestamp.py](src/timestamp.py)を実行する。
 引数に対象にしたい画像ファイル名を指定すると、指定した名前と同じjsonファイルを読み込んでメタ情報を書き換える。
 
-```bash
-$ python timestamp.py /work/test_file/IMG_6248.JPG
-
-before
-(datetime.datetime(2024, 2, 10, 0, 14, 46), datetime.datetime(2024, 2, 9, 15, 20, 5), datetime.datetime(2024, 2, 10, 0, 14, 47))
-<change timstamp>
-after
-(datetime.datetime(2024, 2, 10, 0, 27, 17), datetime.datetime(2019, 7, 1, 13, 14, 20), datetime.datetime(2019, 7, 1, 13, 9, 15))
-```
-
-実行した結果の写真がこちら
-
-
-![after](doc/fig/after.png)
+vscodeのターミナルから以下を実行（私の環境）
+python timestamp.py (適用したいディレクトリ（またはフォルダ）)  
 
 ちゃんと作成日が変更された。
